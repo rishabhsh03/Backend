@@ -1,24 +1,47 @@
 import { useState } from "react";
-
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 function SignIn() {
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+
   const handleChange = (e) => {
-    setLoginData({  
+    setLoginData({
       ...loginData,
       [e.target.name]: e.target.value,
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("Login Data:", loginData);
+    try {
+      const response = await fetch(
+        "http://localhost:8000/api/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(loginData),
+        }
+      );
 
-    alert("Login Successful!");
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem("token", data.token);
+        alert("Login Successful!");
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Login Failed");
+    }
   };
 
   return (
@@ -32,16 +55,24 @@ function SignIn() {
         required
       />
 
-      <input
-        type="password"
-        name="password"
-        placeholder="Enter Password"
-        value={loginData.password}
-        onChange={handleChange}
-        required
-      />
+      <div className="password-container">
+  <input
+    type={showPassword ? "text" : "password"}
+    name="password"
+    placeholder="Enter Password"
+    value={loginData.password}
+    onChange={handleChange}
+    required
+  />
 
-      <button type="submit">Sign In</button>
+  <button
+    type="button"
+    className="eye-btn"
+    onClick={() => setShowPassword(!showPassword)}
+  >
+    {showPassword ? <FaEyeSlash /> : <FaEye />}
+  </button>
+</div>
     </form>
   );
 }

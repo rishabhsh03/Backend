@@ -45,3 +45,27 @@ button {
   border: none;
   color: blue;
 }
+.password-container {
+  position: relative;
+  width: 100%;
+}
+
+.password-container input {
+  width: 100%;
+  padding: 15px;
+  padding-right: 50px; /* space for eye icon */
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.eye-btn {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 0;
+}

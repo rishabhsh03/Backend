@@ -4,14 +4,14 @@ import SignUp from "./Components/SignUp";
 import "./App.css";
 
 function App() {
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin,] = useState(true);
 
   return (
     <div className="container">
       <div className="card">
-        <h1>{isLogin ? "Sign In" : "Sign Up"}</h1>
+        <h1>{isLogin ? "Sign In" : "Sign Up"  }</h1>
 
-        {isLogin ? <SignIn /> : <SignUp />}
+        {isLogin ? <SignIn /> : <SignUp /> }
 
         <p>
           {isLogin
