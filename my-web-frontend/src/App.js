@@ -1,32 +1,26 @@
-import { useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import SignIn from "./Components/SignIn";
 import SignUp from "./Components/SignUp";
+import ForgotPassword from "./Components/ForgotPassword";
+import Welcome from "./Components/Welcome";
+
 import "./App.css";
 
 function App() {
-  const [isLogin, setIsLogin,] = useState(true);
-
   return (
-    <div className="container">
-      <div className="card">
-        <h1>{isLogin ? "Sign In" : "Sign Up"  }</h1>
-
-        {isLogin ? <SignIn /> : <SignUp /> }
-
-        <p>
-          {isLogin
-            ? "Don't have an account?"
-            : "Already have an account?"}
-
-          <button
-            className="toggle-btn"
-            onClick={() => setIsLogin(!isLogin)}
-          >
-            {isLogin ? "Sign Up" : "Sign In"}
-          </button>
-        </p>
+    <BrowserRouter>
+      <div className="container">
+        <div className="card">
+          <Routes>
+            <Route path="/" element={<SignIn />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/welcome" element={<Welcome />} />
+          </Routes>
+        </div>
       </div>
-    </div>
+    </BrowserRouter>
   );
 }
 

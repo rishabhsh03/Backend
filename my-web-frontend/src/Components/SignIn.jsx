@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import {  useNavigate } from "react-router-dom";
+import { Link} from "react-router-dom";
 function SignIn() {
+  const navigate = useNavigate();
+
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
@@ -34,7 +38,7 @@ function SignIn() {
 
       if (response.ok) {
         localStorage.setItem("token", data.token);
-        alert("Login Successful!");
+        navigate("/welcome")
       } else {
         alert(data.message);
       }
@@ -55,7 +59,7 @@ function SignIn() {
         required
       />
 
-      <div className="password-container">
+<div className="password-container">
   <input
     type={showPassword ? "text" : "password"}
     name="password"
@@ -73,7 +77,22 @@ function SignIn() {
     {showPassword ? <FaEyeSlash /> : <FaEye />}
   </button>
 </div>
-    </form>
+
+<button type="submit">Sign In</button>
+
+
+
+<p className="forgot-link">
+  <Link to="/forgot-password">
+    Forgot Password?
+  </Link>
+</p>
+
+<p>
+  Don't have an account?
+  <Link to="/signup"> Sign Up</Link>
+</p>
+</form>
   );
 }
 

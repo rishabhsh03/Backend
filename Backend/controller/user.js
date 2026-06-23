@@ -2,7 +2,10 @@ const db = require("../db");
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const transporter = require("../mail");
 const router = express.Router();
+const otpGenerator = require("otp-generator");
+
 require("dotenv").config(); 
 // For getting Users
 const getUsers = async (req, res) => {
@@ -204,6 +207,120 @@ const login = async (req, res) => {
     });
   }
 };
+const sendResetEmail = async (email, resetToken) => {
+  try {
+    const info = await transporter.sendMail({
+      from: process.env.SMTP_USER,
+      to: email,
+      subject: "Password Reset",
+      html: `
+        <h2>Password Reset Request</h2>
+        <p>Your reset token is:</p>
+        <b>${resetToken}</b>
+      `,
+    });
+
+    console.log("Email Sent:", info.messageId);
+  } catch (error) {
+    console.error("Email Error:", error);
+    throw error;
+  }
+};
+
+const ForgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const result = await db.query(
+      "SELECT * FROM details WHERE email_id = $1",
+      [email]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    const resetToken = jwt.sign(
+      { email },
+      process.env.JWT_SECRET,
+      { expiresIn: "15m" }
+    );
+
+    await sendResetEmail(email, resetToken);
+
+    res.status(200).json({
+      success: true,
+      message: "Reset email sent successfully",
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+const testMail = async (req, res) => {
+  try {
+    const info = await transporter.sendMail({
+      from: process.env.SMTP_USER,
+      to: process.env.SMTP_USER,
+      subject: "Test Email",
+      html: "<h1>Nodemailer Working!</h1>",
+    });
+    console.log("Mail sent:", info)
+    res.json({
+      success: true,
+      messageId: info.messageId,
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const sendotp = async(req, res) => {
+try{
+const {phone_no} = req.body;
+const otp = otpGenerator.generate(6,{
+    upperCaseAlphabets: false,
+    lowerCaseAlphabets:false,
+    specialChars:false
+})
+
+ const result = await db.query(`
+    INSERT INTO otp_verification(
+      id, phone_no, otp, expires_at)
+      VALUES
+      ($1, $2, $3, NOW () + INTERVAL '5 minutes')
+      [phone, otp]
+      `);
+      res.status(200).json({
+       " success":true,
+        "message": "OTP generated successfully",
+        "otp": otp
+      });
+
+     } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error"
+    });
+  }
+};
+
+    
+
+
 
 
 module.exports = {
@@ -213,5 +330,8 @@ module.exports = {
     deleteUser,
     updateUser,
     register,
-    login
+    login,
+    ForgotPassword,
+    testMail,
+    sendotp
 };

@@ -7,7 +7,8 @@ app.use(express.json());
 const db = require("./db");
 const router = require("./router/route");
 
-
+console.log("SMTP_USER:", process.env.SMTP_USER);
+console.log("JWT_SECRET:", process.env.JWT_SECRET);
 const PORT = process.env.PORT || 7000;
 console.log(PORT);
 
