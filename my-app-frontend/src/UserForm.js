@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-function UserForm() {
+ function UserForm() {
   const [formData, setFormData] = useState({
     name: "",
     email_id: "",
@@ -27,7 +27,7 @@ function UserForm() {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
-    });
+    }); 
   };
 
   const handleSubmit = async (e) => {

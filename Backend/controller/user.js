@@ -5,7 +5,6 @@ const bcrypt = require("bcrypt");
 const transporter = require("../mail");
 const router = express.Router();
 const otpGenerator = require("otp-generator");
-
 require("dotenv").config(); 
 // For getting Users
 const getUsers = async (req, res) => {
@@ -287,27 +286,61 @@ const testMail = async (req, res) => {
 };
 
 const sendotp = async(req, res) => {
-try{
-const {phone_no} = req.body;
-const otp = otpGenerator.generate(6,{
-    upperCaseAlphabets: false,
-    lowerCaseAlphabets:false,
-    specialChars:false
-})
 
- const result = await db.query(`
+  try{
+    const {phone_no} = req.body;
+    console.log("Request params: ", req.body);
+    const otp = otpGenerator.generate(6,{
+      upperCaseAlphabets: false,
+      lowerCaseAlphabets:false,
+      specialChars:false
+  })
+  
+
+    const result = await db.query(`
     INSERT INTO otp_verification(
-      id, phone_no, otp, expires_at)
+      phone_no, otp, expires_at)
       VALUES
-      ($1, $2, $3, NOW () + INTERVAL '5 minutes')
-      [phone, otp]
-      `);
+      ($1, $2, NOW () + INTERVAL '5 minutes')
+      `,
+      [phone_no, otp]
+      );
+      
+      console.log("Result: ", result);
       res.status(200).json({
        " success":true,
-        "message": "OTP generated successfully",
-        "otp": otp
+        "message": "OTP generated successfully"
+        
       });
+      console.log("otp :", otp);
+    } catch (error) {
+    console.error(error);
 
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error
+    });
+  }
+};
+
+const verify = async (req, res) => {
+    try{
+      const {phone_no, otp} = req.body;
+     const result = await db.query(`
+       SELECT *
+      FROM otp_verification
+      WHERE phone_no = $1
+      AND otp = $2
+      AND expires_at > NOW()
+      `,
+      [phone_no, otp]
+      );
+      res.status(200).json({
+        "success":true,
+        "message": "OTP generated successfully",
+        "otp" : otp
+      });
      } catch (error) {
     console.error(error);
 
@@ -317,9 +350,31 @@ const otp = otpGenerator.generate(6,{
     });
   }
 };
-
-    
-
+const savetodo = async (req, res) => {
+  console.log(req.body);
+  try{
+    const {tasks, completed, pending} = req.body;
+    console.log(tasks, completed, pending);
+    const result = await db.query(`
+      INSERT INTO todo_app(
+      tasks, completed, pending, date)      
+      VALUES( 
+      $1, $2, $3, CURRENT_DATE)
+      `,
+    [tasks, completed, pending]
+    );
+    res.status(200).json({
+      "success":"true",
+      "message":"INSERTED SUCCESSFULLY"
+    });
+  }catch(error){
+    console.error(error)
+  res.status(500).json({
+    "success":"false",
+    "message":"INTERNAL SERVER ERROR"
+  })
+  }
+};
 
 
 
@@ -333,5 +388,7 @@ module.exports = {
     login,
     ForgotPassword,
     testMail,
-    sendotp
+    sendotp,
+    verify,
+    savetodo
 };

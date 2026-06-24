@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
+import OtpVerification from "./OtpVerification";
 import SignIn from "./Components/SignIn";
 import SignUp from "./Components/SignUp";
 import ForgotPassword from "./Components/ForgotPassword";
 import Welcome from "./Components/Welcome";
-
+import Todo from "./Todo";
 import "./App.css";
 
 function App() {
@@ -17,11 +17,14 @@ function App() {
             <Route path="/signup" element={<SignUp />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/welcome" element={<Welcome />} />
+            <Route path="/OtpVerification" element={<OtpVerification />} />
+            <Route path="/Todo" element={<Todo />}/>
           </Routes>
         </div>
       </div>
     </BrowserRouter>
   );
 }
-
 export default App;
+
+//********************* */
