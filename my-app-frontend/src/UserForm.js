@@ -120,7 +120,7 @@ import { useState, useEffect } from "react";
       <button onClick={fetchDuplicateUsers}>Show Duplicate Users</button>
 
       <table border="1">
-        <thead>
+        <thead>   
           <tr>
             <th>Name</th>
             <th>Email</th>

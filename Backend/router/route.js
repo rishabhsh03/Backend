@@ -12,7 +12,10 @@ const {
   testMail,
   sendotp,
   verify,
-  savetodo
+  saveTodo,
+  deleteTodo,
+  getTodo,
+  updateToDo
 } = require("../controller/user");
 
 
@@ -26,5 +29,8 @@ router.post("/Forgot-password", ForgotPassword);
 router.get("/test-mail", testMail);
 router.post("/send-otp", sendotp);
 router.post("/verify-otp", verify);
-router.post("/save-to-do", savetodo);
+router.post("/save-to-do", saveTodo);
+router.get("/get-to-do", getTodo);
+router.delete("/delete-to-do/:todo_id", deleteTodo);
+router.put("/update-to-do/:todo_id", updateToDo);
 module.exports = router;

@@ -73,12 +73,17 @@ const getDuplicateUsers = async (req, res) => {
   }
 };
 // delete user data
-const deleteUser = async (req, res) => {
+console.log("Outside the delete function");
+
+ const deleteUser = async (req, res) => {
+  console.log("Inside function");
   try{
     const {user_id} = req.params;
+    console.log("User Id: ", user_id);
     const result = await db.query(`
       DELETE FROM userdata
       WHERE user_id = $1`, [user_id]);
+      console.log(result);
 
       res.status(200).json({
         success: true,
@@ -350,22 +355,25 @@ const verify = async (req, res) => {
     });
   }
 };
-const savetodo = async (req, res) => {
+
+const saveTodo = async (req, res) => {
+  console.log("Headers:", req.headers);
+  console.log("BODY: ", req.body);
   console.log(req.body);
   try{
-    const {tasks, completed, pending} = req.body;
-    console.log(tasks, completed, pending);
+    const {tasks, completed, pending, date} = req.body;
+    console.log(tasks, completed, pending,);
     const result = await db.query(`
       INSERT INTO todo_app(
       tasks, completed, pending, date)      
       VALUES( 
       $1, $2, $3, CURRENT_DATE)
       `,
-    [tasks, completed, pending]
+    [tasks, completed, pending, ]
     );
     res.status(200).json({
       "success":"true",
-      "message":"INSERTED SUCCESSFULLY"
+      "message":"TASK INSERTED SUCCESSFULLY"
     });
   }catch(error){
     console.error(error)
@@ -376,8 +384,77 @@ const savetodo = async (req, res) => {
   }
 };
 
+const getTodo = async (req, res) => {
+  try {
+    const result = await db.query("SELECT * FROM todo_app ORDER BY todo_id");
 
+    res.status(200).json({
+      success: true,
+      data: result.rows,
+    });
+  } catch (error) {
+    console.error(error);
 
+    res.status(500).json({
+      success: false,
+      message: "INTERNAL SERVER ERROR",
+    });
+  }
+};
+const deleteTodo = async (req, res) => {
+  console.log("Inside function");
+  try{
+    console.log("req.param:",req.params);
+    const {todo_id} = req.params;
+    
+    console.log("todo_id:",todo_id);  
+    const result = await db.query(`
+      DELETE FROM todo_app
+      WHERE todo_id = $1`, 
+      [todo_id]
+    );
+    
+
+      res.status(200).json({
+        success: true,
+        message: "TASK DELETED SUCCESSFULLY",
+        
+      
+      });
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        success: false,
+        message: "INTERNAL SERVER ERROR",
+      });
+    }
+  };
+const updateToDo = async (req, res) => {
+  try {
+    
+    const { todo_id } = req.params;
+    const { tasks, completed, pending} = req.body;
+    console.log("req.body", req.body);
+    await db.query(`
+      UPDATE todo_app
+      SET tasks = $1, completed = $2, pending = $3
+      WHERE todo_id = $4`,
+      [tasks, completed, pending, todo_id]
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "TASK UPDATED SUCCESSFULLY",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "INTERNAL SERVER ERROR",
+    });
+  }
+};
 module.exports = {
     getUsers,
     saveUsers,
@@ -390,5 +467,8 @@ module.exports = {
     testMail,
     sendotp,
     verify,
-    savetodo
+    saveTodo,
+    getTodo,
+    deleteTodo,
+    updateToDo
 };
