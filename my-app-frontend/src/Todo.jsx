@@ -132,7 +132,7 @@ function Todo() {
                 </button>
                 <button onClick={() => {
                   seteditId(item.todo_id);
-                  setTask(item.task);
+                  setTask(item.tasks);
                   setcompleted(item.completed);
                   setpending(item.pending);
                 }}
