@@ -6,6 +6,7 @@ function Todo() {
   const [completed, setcompleted] = useState("");
   const [pending, setpending] = useState("");
   const [editId, seteditId] = useState(null);
+  const [refresh,setRefresh] = useState(false);
   useEffect(() => {
     const fetchTodo = async () => {
       try {
@@ -18,7 +19,7 @@ function Todo() {
     };
 
     fetchTodo();
-  }, []);
+  }, [refresh]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,6 +38,10 @@ function Todo() {
         })
       });
      seteditId(null);
+     setRefresh(!refresh);
+     setTask("");
+     setcompleted("");
+     setpending("");
     }else{
       await fetch("http://localhost:8000/api/save-to-do", {
         method: "POST",
@@ -50,6 +55,7 @@ function Todo() {
            
         }),
       });
+      setRefresh(!refresh);
     }
     }catch(error){
       console.error(error);
@@ -91,7 +97,7 @@ function Todo() {
         />
         <input
           type="text"
-          name="task"
+          name="pending"
           placeholder="pending"
           value={pending}
           onChange={(e) => setpending(e.target.value)}
